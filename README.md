@@ -12,12 +12,8 @@
 - React, Nginx, Redis, MySQL (InnoDB)
 - JMeter, iptables, OpenSSL
 
-## 🚀 주요 성과 (Before → After)
-| 항목 | 개선 전 | 개선 후 | 비고 |
-|------|--------|--------|------|
-| DOM 렌더링 | 513ms | 382ms | 불필요한 DOM 제거 |
-| API Throughput | 100 req/s | 400 req/s | 캐시 적용 |
-| Tomcat 스레드 | 200 | 25 | 논블로킹 전환 |
+## 🚀 주요 성과 (Before → After) ( Notion 링크 참고 )
+https://sprinkle-herring-333.notion.site/1680ded796ce808fb9d2da2be0a0dcd7
 
 
 ## 📊 성능 테스트
