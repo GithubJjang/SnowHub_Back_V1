@@ -1,0 +1,44 @@
+        // - Header <- WebClient에 직접 세팅
+        // - Payload
+        MultiValueMap<String, String> payload = new LinkedMultiValueMap<>();
+        payload.add("code", code);
+        payload.add("client_id", googleConfig.getClientId());
+        payload.add("client_secret", googleConfig.getClientSecret());
+        payload.add("redirect_uri", googleConfig.getRedirectUri());
+        payload.add("grant_type", "authorization_code");
+
+
+        //  신규 유저인 경우, refresh 토큰과 함께 insert
+        //  기존 유저인 경우, DB에서 찾은 후 update
+
+        GoogleDetails.Token getTokenFromGoogle = CustomHttpClient.getInstance().mutate()
+                .build()
+                .post()
+                .uri("https://oauth2.googleapis.com/token")
+                .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
+                .body(BodyInserters.fromFormData(payload))
+                .retrieve()
+                .bodyToMono(GoogleDetails.Token.class)
+                .block();
+
+
+
+        // Firebase API를 이용해서, 로그인을 진행한다. <- 검증을 한다.
+        // 그리고, idToken, refreshToken 받아오기.
+        /*
+        String getUserInfo = webClient
+                .post()
+                .uri("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBTLAv6wGA--ago8nUor445hdho3eIvqnA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromFormData(formData))
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+         */
+
+        //JSONObject jsonObject2 = new JSONObject(getUserInfo);
+
+        //String username = (String) jsonObject2.get("displayName");
+        //String idToken = (String) jsonObject2.get("idToken");
+        //String refreshToken = (String) jsonObject2.get("refreshToken"); // refreshToken은 DB에 저장.

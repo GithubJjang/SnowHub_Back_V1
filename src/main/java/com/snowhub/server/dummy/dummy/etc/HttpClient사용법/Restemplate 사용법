@@ -1,0 +1,83 @@
+        // Header
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        // Payload
+        MultiValueMap<String, String> payload = new LinkedMultiValueMap<>();
+        payload.add("code", code);
+        payload.add("client_id", googleConfig.getClientId());
+        payload.add("client_secret", googleConfig.getClientSecret());
+        payload.add("redirect_uri", googleConfig.getRedirectUri());
+        payload.add("grant_type", "authorization_code");
+
+        //HttpHeader와 HttpBody를 하나의 오브젝트에 담기
+        HttpEntity<MultiValueMap<String, String>> googleReq =
+                new HttpEntity<>(payload, headers);
+
+        RestTemplate rt = SingleRestTemplate.getInstance();
+        //실제로 요청하기
+        //Http 요청하기 - POST 방식으로 - 그리고 response 변수의 응답을 받음.
+
+        ResponseEntity<String> response = rt.exchange(
+                "https://oauth2.googleapis.com/token",
+                HttpMethod.POST,
+                googleReq,
+                String.class
+        );
+        String getBody = response.getBody();
+        JSONObject jsonObject = new JSONObject(getBody);
+
+        //String accessToken = (String)jsonObject.get("access_token");
+        //int expiresIn = (Integer) jsonObject.get("expires_in");
+        //String scope = (String)jsonObject.get("scope");
+        //String tokenType = (String)jsonObject.get("token_type");
+        // String idToken = (String)jsonObject.get("id_token");
+        // String refreshToken = (String)jsonObject.get("refresh_token");
+
+
+        1. Header, Payload 생성 ->
+        2. 두 element를 하나로 묶기 ->
+        3. RestAPI 요청 전송
+
+        =====================================================================
+
+        HttpHeaders headers2 = new HttpHeaders();
+        headers2.add("Authorization", "Bearer " + accessToken);
+        MultiValueMap<String, String> payload2 = new LinkedMultiValueMap<>();
+        HttpEntity<MultiValueMap<String, String>> googleReq2 =
+                new HttpEntity<>(payload2, headers2);
+
+        ResponseEntity<String> response2 = rt.exchange(
+                "https://www.googleapis.com/oauth2/v2/userinfo",
+                HttpMethod.GET,
+                googleReq2,
+                String.class
+        );
+        String values = response2.getBody();
+        JSONObject jsonObject1 = new JSONObject(values);
+
+        String email = (String) jsonObject1.get("email");// email
+        String id = (String) jsonObject1.get("id");// password (고민)
+        String name = (String) jsonObject1.get("name");// username
+
+
+        =====================================================================
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers3 = new HttpHeaders();
+        headers3.set("Authorization", "Bearer "+idToken);
+        HttpEntity entity = new HttpEntity(headers3);
+
+        String baseUrl = "http://localhost:8000/board/list";
+
+        String uri = UriComponentsBuilder.fromUriString(baseUrl)
+                .queryParam("page", 0)
+                .queryParam("category", "all")
+                .build().toString();
+
+        for(int i=0; i<100; i++) {
+            ResponseEntity responseEntity = restTemplate.exchange(
+                 uri,
+                 HttpMethod.GET,
+                 entity,
+                 String.class
+            );

@@ -1,0 +1,28 @@
+HttpHeaders headers  = new HttpHeaders(); // 담아줄 header
+            HttpEntity entity = new HttpEntity<>(headers); // http entity에 header 담아줌
+
+            //RestTemplate rt = new RestTemplate();
+            RestTemplate rt = SingleRestTemplate.getInstance();
+            ResponseEntity<String> getTokenInfo = rt.exchange(
+                    "https://oauth2.googleapis.com/tokeninfo?id_token="+token,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
+            String responseValues = getTokenInfo.getBody();
+            //API를 통한 검증
+            JSONObject jsonObject = new JSONObject(responseValues);
+            String iss = (String)jsonObject.get("iss");
+            String aud = (String)jsonObject.get("aud");
+            String email = (String)jsonObject.get("email");
+            if(iss.equals("https://accounts.google.com") &&
+            aud.equals("477737423484-bdni5k16hncmbpcccl3ff9bqgq50c2fm.apps.googleusercontent.com")){
+                UserDetails getUserDetails = customUserDetailsService.loadUserByUsername(email);
+
+                Authentication authentication =
+                        new UsernamePasswordAuthenticationToken(getUserDetails,"123456789",getUserDetails.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                filterChain.doFilter(request,response);
+                return;

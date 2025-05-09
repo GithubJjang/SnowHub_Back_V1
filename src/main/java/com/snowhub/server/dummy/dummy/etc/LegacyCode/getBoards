@@ -1,0 +1,91 @@
+/* Legacy
+
+        if (page <= 4 && size != 0) {
+            //count도 가져와야 한다.
+
+            //int cacheSize = 80;
+            //int boardFetchSize = 16;
+            List<String> fetchedBoardByRedis = null;
+
+            int start = boardFetchSize * page;
+
+            fetchedBoardByRedis = listOperations.range(key,
+                start, start + boardFetchSize - 1);
+            // 맨 앞이 최신 데이터
+
+            fetchedBoards = new ArrayList<>();
+
+            try {
+                HashOperations<String, String, String> hashOperations = readOnlyHashOperations;//slaveRedisTemplate.opsForHash();
+                // 1.
+                for (String s : fetchedBoardByRedis) {
+                    BoardResponse boardResponse = objectMapper.readValue(s, BoardResponse.class); // Redis에서 가져온다.
+
+                    StringBuilder hashKeyBuilder = new StringBuilder();
+                    hashKeyBuilder.append("board:");
+                    hashKeyBuilder.append(boardResponse.getId());
+
+                    String hashKey = hashKeyBuilder.toString();
+                    String count = hashOperations.get(hashKey, "count");
+
+                    boardResponse.setCount(Integer.valueOf(count));
+
+                    fetchedBoards.add(boardResponse); // returnBoards에 저장한다.
+
+                }
+
+                int getPageSize = Math.toIntExact(80 / 16) + 1;
+
+                BoardResponse pageSizeEntity = new BoardResponse();
+                pageSizeEntity.setId(Math.toIntExact(getPageSize));
+                pageSizeEntity.setTitle(getPageSize + "");
+
+                fetchedBoards.add(pageSizeEntity);
+
+                return fetchedBoards;
+
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            } catch (NullPointerException e) {
+                throw new NullPointerException(e.toString());
+            }
+
+        } else {
+
+            // 페이징 범위(4)를 넘어선 경우는 DB에서 가져온다.
+            List<Board> result = boardRepo.pagination(category, page);
+
+            // 1.
+            fetchedBoards = new ArrayList<>(result.stream()
+                .map(   // param = Board, return BoadListDTO
+                    (e) -> BoardResponse.builder()
+                        .id(e.getId())
+                        .category(e.getCategory())
+                        .title(e.getTitle())
+                        .writer(e.getUser().getDisplayName())
+                        .count(e.getCount())
+                        .createDate(e.getCreateDate())
+                        .build()
+                )
+                .toList())
+            ;
+
+            // Querydsl을 이용한 DTO로 값을 받는 경우, user엔티티의 username 추출하기가 매우 번거롭다. <- 추후 고려
+            long getBoardSize = jpaQueryFactory
+                .select(board.id.count())
+                .from(board)
+                .where(categoryEq(category))
+                .fetchOne();
+            int getPageSize = Math.toIntExact(getBoardSize / 16) + 1;
+
+            BoardResponse pageSizeEntity = new BoardResponse();
+            pageSizeEntity.setId(Math.toIntExact(getPageSize));
+            pageSizeEntity.setTitle(getPageSize + "");
+
+            fetchedBoards.add(pageSizeEntity);
+
+            return fetchedBoards;
+
+        }
+
+ */

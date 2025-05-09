@@ -1,0 +1,23 @@
+    public void firebaseSample(){
+                /*
+        try {
+            // Verify만 하면 됨.
+            FirebaseToken decode = firebaseAuth.verifyIdToken(bearerToken);
+            String uid = decode.getUid();
+            String username = decode.getName();
+            UserDetails getUserDetails = customUserDetailsService.loadUserByUsername(username);
+
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(getUserDetails,"123456789",getUserDetails.getAuthorities());
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            filterChain.doFilter(request,response);
+            return;
+
+        } catch (FirebaseAuthException e) { // 강제로 예외 발생안시키고, 다음꺼 실행
+
+        }
+         */
+
+    }

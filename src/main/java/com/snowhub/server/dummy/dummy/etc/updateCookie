@@ -1,0 +1,29 @@
+                // 기존 쿠키 삭제, 새 쿠키 response에 응답.
+
+                // 기존쿠키 삭제
+                /*
+                Cookie[] myCookie = request.getCookies();
+                Cookie getCookie=null;
+
+                if(getCookie!=null){
+                    for(Cookie c: myCookie){
+                        if(c.getName().equals("accesstoken")){
+                            getCookie=c;
+                        }
+                    }
+                    getCookie.setValue(null);
+                    getCookie.setMaxAge(0);
+                    getCookie.setPath("/");
+                    response.addCookie(getCookie);
+                }
+
+
+                // 새 쿠키 생성
+                Cookie newcookie = new Cookie("accesstoken",updatedAccessToken);
+                newcookie.setDomain("localhost");
+                newcookie.setPath("/");
+                newcookie.setMaxAge(3600);
+                newcookie.setSecure(false);
+
+                response.addCookie(newcookie);
+                */
